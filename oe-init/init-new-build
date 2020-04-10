@@ -1,0 +1,59 @@
+#! /bin/bash
+
+script_dir=$(dirname $(readlink -e $BASH_SOURCE))
+
+orig_args=${@}
+
+while [ $# -gt 0 ]
+do
+
+key="$1"
+
+case $key in
+        --base-path)
+		base_path=$2
+		shift
+                ;;
+esac
+shift
+done
+
+${script_dir}/internal/gen-oe-setup.py ${orig_args} || exit 1
+
+base_path=$(realpath $base_path)
+
+test -e ${base_path}/.setup_build || exit 1
+
+. ${base_path}/.setup_build > /dev/null
+
+mv ${base_path}/.setup_build ${base_path}/.setup_run
+
+echo ${EXEC} >> source_build
+
+bitbake -p || exit 1
+
+${script_dir}/internal/add-layers.py --layers $(printf %s $BBLAYERS) || exit 1
+
+mv conf/local.conf conf/local.conf.bk
+
+echo "## The following variables have been automatically added from the" > conf/local.conf
+echo "## init-new-build script" >> conf/local.conf
+echo "" >> conf/local.conf
+echo "MACHINE='${MACHINE}'" >> conf/local.conf
+echo "DISTRO='${DISTRO}'" >> conf/local.conf
+echo "DL_DIR='${DL_DIR}'" >> conf/local.conf
+echo "SSTATE_DIR='${SSTATE_DIR}'" >> conf/local.conf
+echo "" >> conf/local.conf
+
+cat conf/local.conf.bk >> conf/local.conf
+rm conf/local.conf.bk
+
+
+cat <<EOF
+
+Your build has been setup, please source the file "source_build" to
+get started.
+
+. ${BUILDDIR}/source_build
+
+EOF
