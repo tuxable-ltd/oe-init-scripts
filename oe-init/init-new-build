@@ -39,10 +39,10 @@ mv conf/local.conf conf/local.conf.bk
 echo "## The following variables have been automatically added from the" > conf/local.conf
 echo "## init-new-build script" >> conf/local.conf
 echo "" >> conf/local.conf
-echo "MACHINE='${MACHINE}'" >> conf/local.conf
-echo "DISTRO='${DISTRO}'" >> conf/local.conf
-echo "DL_DIR='${DL_DIR}'" >> conf/local.conf
-echo "SSTATE_DIR='${SSTATE_DIR}'" >> conf/local.conf
+echo "MACHINE ?= '${MACHINE}'" >> conf/local.conf
+echo "DISTRO ?= '${DISTRO}'" >> conf/local.conf
+echo "DL_DIR = '${DL_DIR}'" >> conf/local.conf
+echo "SSTATE_DIR = '${SSTATE_DIR}'" >> conf/local.conf
 echo "" >> conf/local.conf
 
 cat conf/local.conf.bk >> conf/local.conf
