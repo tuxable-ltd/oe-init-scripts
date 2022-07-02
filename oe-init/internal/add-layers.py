@@ -2,6 +2,7 @@
 
 import subprocess, sys, re, argparse, os, shutil, json
 
+error_output_dump = ""
 bblayers_file = None
 bblayers_backup = None
 
@@ -9,6 +10,7 @@ def main():
 
 	global bblayers_file
 	global bblayers_backup
+	global error_output_dump
 
 	parser = argparse.ArgumentParser(description='Manage the build tree')
 
@@ -62,6 +64,7 @@ def main():
 				"exist, and for circular dependancies")
 			print_info("Layers added: {}".format(added_layers))
 			print_info("Layers failed: {}".format(layers))
+			print_error(error_output_dump)
 			exit(1)
 
 	print_info("All layers sucessfully added")
@@ -71,6 +74,7 @@ def add_layer(layer):
 
 	global bblayers_file
 	global bblayers_backup
+	global error_output_dump
 
 	try:
 		shutil.copyfile(bblayers_file, bblayers_backup)
@@ -84,6 +88,8 @@ def add_layer(layer):
 		print_info("Added layer {} sucessfully".format(layer))
 
 	except subprocess.CalledProcessError as e:
+		error_output_dump += e.stdout.decode("utf-8")
+		error_output_dump += e.stderr.decode("utf-8")
 		shutil.copyfile(bblayers_backup, bblayers_file)
 		return False
 
