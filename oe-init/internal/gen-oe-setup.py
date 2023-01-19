@@ -7,13 +7,14 @@ def main():
 	parser = argparse.ArgumentParser(description='Generate an OE setup script')
 
 	parser.add_argument('--base-path', help='Path to base working directory', default=None)
-	parser.add_argument('--layers-path', help='Path to OE layers directory', default='openembedded'
-)
+	parser.add_argument('--layers-path', help='Path to OE layers directory', default='openembedded')
+
 	parser.add_argument('--machine', help='Machine name', default='select')
 	parser.add_argument('--distro', help='Distro name', default='select')
 	parser.add_argument('--build-dir', help='Build dir location', default='default')
 	parser.add_argument('--dl-dir', help='Download directory location', default='default')
 	parser.add_argument('--ss-dir', help='Shared state directory location', default='default')
+	parser.add_argument('--pers-dir', help='Shared persistent cache directory location', default='default')
 
 	args = parser.parse_args()
 
@@ -97,6 +98,14 @@ def main():
 	ss_dir = os.path.abspath(ss_dir)
 	print_info("Selected shared state dir: " + ss_dir)
 
+	if args.pers_dir == "default":
+		pers_dir = os.path.join(root_path, "persistance")
+	else:
+		pers_dir = args.pers_dir
+
+	pers_dir = os.path.abspath(pers_dir)
+	print_info("Selected persistence dir: " + pers_dir)
+
 	bblayer_paths = generate_bblayers(layers_path, selected_machine[0])
 	bblayer_paths += generate_bblayers(layers_path, selected_distro[0])
 	bblayer_paths.append(os.path.join(layers_path, selected_machine[0]))
@@ -125,6 +134,7 @@ def main():
 	source_file.write("BUILDDIR={}\n".format(build_dir))
 	source_file.write("DL_DIR={}\n".format(dl_dir))
 	source_file.write("SSTATE_DIR={}\n".format(ss_dir))
+	source_file.write("PERSISTENT_DIR={}\n".format(pers_dir))
 	source_file.write("BBLAYERS='{}'\n".format(json.dumps(bblayer_paths)))
 	source_file.write("EXEC='source {0}/oe-core.git/oe-init-build-env {1} {0}/bitbake.git'\n".format(layers_path, build_dir))
 	source_file.write("source {0}/oe-core.git/oe-init-build-env {1} {0}/bitbake.git\n".format(layers_path, build_dir))
