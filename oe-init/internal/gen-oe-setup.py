@@ -99,7 +99,7 @@ def main():
 	print_info("Selected shared state dir: " + ss_dir)
 
 	if args.pers_dir == "default":
-		pers_dir = os.path.join(root_path, "persistance")
+		pers_dir = os.path.join(root_path, "cache")
 	else:
 		pers_dir = args.pers_dir
 
