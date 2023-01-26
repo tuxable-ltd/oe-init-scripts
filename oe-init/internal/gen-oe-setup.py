@@ -8,7 +8,6 @@ def main():
 
 	parser.add_argument('--base-path', help='Path to base working directory', default=None)
 	parser.add_argument('--layers-path', help='Path to OE layers directory', default='openembedded')
-
 	parser.add_argument('--machine', help='Machine name', default='select')
 	parser.add_argument('--distro', help='Distro name', default='select')
 	parser.add_argument('--build-dir', help='Build dir location', default='default')
